@@ -1,0 +1,22 @@
+#==================================================================================================
+#                                     dev
+#==================================================================================================
+
+module "dev_vm3" {
+  source                             = "../../modules/vm"
+  env                                = "Dev"
+  resource_group_details             = var.resource_group_details
+  network_interface_ip_configuration = var.network_interface_ip_configuration
+  subnet_id                          = var.subnet_id
+  vm_details               = var.dev_vm_details
+  local_source_folder_path = var.local_source_folder_path
+  install_script_name      = var.install_script_name
+  business_group_id        = var.business_group_id
+  anypoint_client_id       = var.anypoint_client_id
+  anypoint_client_secret   = var.anypoint_client_secret
+  nexusBaseAuth            = var.nexusBaseAuth
+  server_name             = var.dev_server_name
+
+
+}
+

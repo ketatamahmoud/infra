@@ -1,0 +1,8 @@
+{
+  "nexusBaseAuth": "YWRtaW46RmFjaGZhY2gyNjgyOA==",
+  "dev_server_name": "customer",
+  "uat_server_name": "customer",
+  "business_group_id": "a68b285e-3fde-49dc-9c8c-a3697ee6ffba",
+  "anypoint_client_id": "42228c658c86400fbf2bdfd11ccc39dc",
+  "anypoint_client_secret": "33Fd3bD968A345E9Bb5F061ee634A081"
+}

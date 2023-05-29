@@ -1,0 +1,67 @@
+name: 'TerraformAzure'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+#jobs:
+#  retrieve-team-members:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Retrieve team members
+#        id: team-members
+#        run: |
+#          access_token=${{ secrets.access_token }}
+#          team_slug=olive-terraform-team
+#          org_name=Olive-Soft-Company
+#          url="https://api.github.com/orgs/$org_name/teams/$team_slug/members"
+#          response=$(  curl   -X GET $url -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $access_token" -H "X-GitHub-Api-Version: 2022-11-28")
+#          members=($(echo "$response" | jq -r '.[].login'))
+#          members_string=$(printf "%s," "${members[@]}")
+#          members_string=${members_string%?} # remove the last comma
+#          echo "members= $members_string" >> $GITHUB_OUTPUT
+#    outputs:
+#      members: ${{ steps.team-members.outputs.members }}
+
+  terraform:
+#    needs: retrieve-team-members
+    name: 'terraform pipeline'
+    env:
+      ARM_CLIENT_ID: ${{secrets.AZURE_CLIENT_ID}}
+      ARM_CLIENT_SECRET: ${{secrets.AZURE_CLIENT_SECRET}}
+      ARM_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      ARM_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+#      members: ${{ needs.retrieve-team-members.outputs.members }}
+    runs-on: ubuntu-latest
+    steps:         
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - name: Terraform Init
+        run: terraform init 
+      - name: create a json var file 
+        run: |
+            json='{
+            "nexusBaseAuth": "YWRtaW46RmFjaGZhY2gyNjgyOA==",
+            "dev_server_name": "customers",
+            "uat_server_name": "customers",
+            "business_group_id": "a68b285e-3fde-49dc-9c8c-a3697ee6ffba",
+            "anypoint_client_id": "42228c658c86400fbf2bdfd11ccc39dc",
+            "anypoint_client_secret": "33Fd3bD968A345E9Bb5F061ee634A081"
+          }'
+            
+                 echo "$json" > variable-values.json
+      - name: Terraform Plan
+        run: terraform plan -out main.tfplan -var-file=variable-values.json
+#      - name: admin approval
+#        uses: trstringer/manual-approval@v1
+#        with:
+#          secret: ${{ github.TOKEN }}
+#          approvers: ${{ env.members }}
+#          exclude-workflow-initiator-as-approver: false
+#          minimum-approvals: 1
+      - name: Terraform Apply
+        run: terraform apply -auto-approve "main.tfplan"
