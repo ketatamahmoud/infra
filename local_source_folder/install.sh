@@ -192,7 +192,4 @@ echo_success "Startup command has been configured."
 
 # Reboot the system
 
-export ARM_CLIENT_ID=bc22e1a7-dce4-4409-aaaa-606c6ddb103e
- export ARM_CLIENT_SECRET=JO68Q~xhFfmlJglukeyD6G4Mha90S~BcXPpPmc1D
- export ARM_SUBSCRIPTION_ID=8b883f9c-2326-4c31-92ae-c4bbda9042ce
-  export ARM_TENANT_ID=81107fbb-c735-43db-b9cf-ad9c775043ab
+exit 0

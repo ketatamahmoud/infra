@@ -18,5 +18,11 @@ locals {
   storage_account_name = join("_", [var.resource_group_details.name, local.string2])
 }
 provider "azurerm" {
-  features {}
+  features {
+    virtual_machine_scale_set {
+      roll_instances_when_required = true
+      force_delete = true
+      scale_to_zero_before_deletion = true
+    }
+  }
 }
