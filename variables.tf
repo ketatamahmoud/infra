@@ -134,9 +134,9 @@ variable "nexusBaseAuth" {
 #====================================================================================================================
 
 
-variable "uat_server_name" {
-  type = string
-}
+#variable "uat_server_name" {
+#  type = string
+#}
 
 variable "business_group_id" {
   description = "This contains the business group id"
