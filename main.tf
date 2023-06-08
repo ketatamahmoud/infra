@@ -12,7 +12,7 @@ locals {
 
 resource "azurerm_resource_group" "example" {
   name     = "MuleSoft-Rg"
-  location = var.resource_group_details.location
+  location = "West Europe"
 }
 resource "tls_private_key" "linux_ssh_key" {
   algorithm = "RSA"
@@ -62,16 +62,7 @@ resource "azurerm_lb_backend_address_pool" "example" {
 
 
 
-resource "azurerm_availability_set" "app_set" {
-  name                = "app-set"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  platform_fault_domain_count = 3
-  platform_update_domain_count = 3
-  depends_on = [
-    azurerm_resource_group.example
-  ]
-}
+
 
 resource "azurerm_storage_account" "appstore" {
   name                     = "installsh4577685m"
