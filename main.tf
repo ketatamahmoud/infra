@@ -74,7 +74,7 @@ resource "azurerm_availability_set" "app_set" {
 }
 
 resource "azurerm_storage_account" "appstore" {
-  name                     = "installsh4577687s"
+  name                     = "installsh4577687M"
   resource_group_name      = azurerm_resource_group.example.name
   location                 = "North Europe"
   account_tier             = "Standard"
@@ -86,7 +86,7 @@ resource "azurerm_storage_account" "appstore" {
 
 resource "azurerm_storage_container" "data" {
   name                  = "data"
-  storage_account_name  = "installsh4577687s"
+  storage_account_name  = "installsh4577687M"
   container_access_type = "blob"
   depends_on=[
     azurerm_storage_account.appstore
@@ -98,7 +98,7 @@ resource "azurerm_storage_container" "data" {
 
 resource "azurerm_storage_blob" "install" {
   name                   = "install.sh"
-  storage_account_name   = "installsh4577687s"
+  storage_account_name   = "installsh4577687M"
   storage_container_name = "data"
   type                   = "Block"
   source                 = "local_source_folder/install.sh"
@@ -145,8 +145,8 @@ resource "azurerm_storage_blob" "install" {
 #
 #  settings = <<SETTINGS
 #    {
-#      "fileUris": ["https://installsh4577687s.blob.core.windows.net/data/install.sh"],
-#      "commandToExecute": "for i in `seq 1 ${azurerm_linux_virtual_machine_scale_set.example.instances}`; do az vmss run-command invoke -g ${azurerm_resource_group.example.name} -n ${azurerm_linux_virtual_machine_scale_set.example.name} --command-id RunShellScript --scripts 'curl -o script.sh https://installsh4577687s.blob.core.windows.net/data/install.sh && chmod +x script.sh && ./script.sh ${local.script_arguments}'; done"
+#      "fileUris": ["https://installsh4577687M.blob.core.windows.net/data/install.sh"],
+#      "commandToExecute": "for i in `seq 1 ${azurerm_linux_virtual_machine_scale_set.example.instances}`; do az vmss run-command invoke -g ${azurerm_resource_group.example.name} -n ${azurerm_linux_virtual_machine_scale_set.example.name} --command-id RunShellScript --scripts 'curl -o script.sh https://installsh4577687M.blob.core.windows.net/data/install.sh && chmod +x script.sh && ./script.sh ${local.script_arguments}'; done"
 #    }
 #  SETTINGS
 #
@@ -254,7 +254,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
 #    type                 = "CustomScript"
 #    type_handler_version = "2.0"
 #    settings = jsonencode({
-#      "fileUris": ["https://installsh4577687s.blob.core.windows.net/data/install.sh"],
+#      "fileUris": ["https://installsh4577687M.blob.core.windows.net/data/install.sh"],
 #      "commandToExecute" = "/bin/bash  install.sh ${local.script_arguments}"
 #    })
 #  }
@@ -290,7 +290,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
 #  type_handler_version         = "2.0"
 #
 #  settings = jsonencode({
-#    "fileUris": ["https://installsh4577687s.blob.core.windows.net/data/install.sh"],
+#    "fileUris": ["https://installsh4577687M.blob.core.windows.net/data/install.sh"],
 #    "commandToExecute" = "/bin/bash  install.sh ${local.script_arguments}"
 #  })
 #}
