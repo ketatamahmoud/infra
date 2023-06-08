@@ -1,12 +1,11 @@
-
 locals {
-  script_arguments= {
-    businessGroupId=var.business_group_id
-    client_id=var.anypoint_client_id
-    client_secret=var.anypoint_client_secret
-    envName="ppd"
-    nexusBaseAuth=var.nexusBaseAuth
-    serverName=var.server_name
+  script_arguments = {
+    businessGroupId = var.business_group_id
+    client_id       = var.anypoint_client_id
+    client_secret   = var.anypoint_client_secret
+    envName         = "ppd"
+    nexusBaseAuth   = var.nexusBaseAuth
+    serverName      = var.server_name
   }
 }
 
@@ -61,27 +60,22 @@ resource "azurerm_lb_backend_address_pool" "example" {
 }
 
 
-
-
-
-resource "azurerm_storage_account" "appstore" {
-  name                     = "installsh4577685m"
-  resource_group_name      = azurerm_resource_group.example.name
-  location                 = "North Europe"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  depends_on=[
-    azurerm_resource_group.example
-  ]
-}
+#resource "azurerm_storage_account" "appstore" {
+#  name                     = "installsh4577685m"
+#  resource_group_name      = azurerm_resource_group.example.name
+#  location                 = "North Europe"
+#  account_tier             = "Standard"
+#  account_replication_type = "LRS"
+#  depends_on=[
+#    azurerm_resource_group.example
+#  ]
+#}
 
 resource "azurerm_storage_container" "data" {
   name                  = "data"
-  storage_account_name  = "installsh4577685m"
+  storage_account_name  = "installshmuleruntime"
   container_access_type = "blob"
-  depends_on=[
-    azurerm_storage_account.appstore
-  ]
+
 }
 
 # Here we are uploading our IIS Configuration script as a blob
@@ -89,11 +83,11 @@ resource "azurerm_storage_container" "data" {
 
 resource "azurerm_storage_blob" "install" {
   name                   = "install.sh"
-    storage_account_name   = "installsh4577685m"
+  storage_account_name   = "storageaccount"
   storage_container_name = "data"
   type                   = "Block"
   source                 = "local_source_folder/install.sh"
-  depends_on=[azurerm_storage_container.data]
+  depends_on             = [azurerm_storage_container.data]
 }
 #data "azurerm_storage_account_sas" "example" {
 #  connection_string = azurerm_storage_account.appstore.primary_connection_string
@@ -154,33 +148,33 @@ resource "azurerm_lb_rule" "example" {
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_ids = [
+  backend_address_pool_ids       = [
     azurerm_lb_backend_address_pool.example.id,
   ]
 }
 resource "azurerm_lb_rule" "ssh" {
-    loadbalancer_id                = azurerm_lb.example.id
-    name                           = "ssh"
-    protocol                       = "Tcp"
-    frontend_port                  = 22
-    backend_port                   = 22
-    frontend_ip_configuration_name = "PublicIPAddress"
-    backend_address_pool_ids = [
-        azurerm_lb_backend_address_pool.example.id,
-    ]
+  loadbalancer_id                = azurerm_lb.example.id
+  name                           = "ssh"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PublicIPAddress"
+  backend_address_pool_ids       = [
+    azurerm_lb_backend_address_pool.example.id,
+  ]
 }
 data "local_file" "install_sh" {
   filename = "${path.module}/local_source_folder/install.sh"
 }
 resource "azurerm_network_security_group" "example" {
-  name                = "nsg"
+  name                = "Mulensg"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 }
 
 resource "azurerm_subnet_network_security_group_association" "vm_nsg_association" {
 
-  subnet_id = azurerm_subnet.internal.id
+  subnet_id                 = azurerm_subnet.internal.id
   network_security_group_id = azurerm_network_security_group.example.id
   depends_on                = [
     azurerm_subnet.internal,
@@ -222,9 +216,9 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
   location            = azurerm_resource_group.example.location
   sku                 = "Standard_B2ms"
 
-  instances           = 2
-  admin_username      = "mahmoud"
-  user_data = base64encode(templatefile("${path.module}/userData.tftpl", local.script_arguments))
+  instances      = 2
+  admin_username = "mahmoud"
+  user_data      = base64encode(templatefile("${path.module}/userData.tftpl", local.script_arguments))
 
   admin_ssh_key {
     username   = "mahmoud"
@@ -234,21 +228,21 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
   source_image_reference {
     publisher = "Canonical"
 
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    offer   = "UbuntuServer"
+    sku     = "18.04-LTS"
+    version = "latest"
   }
 
-#  extension {
-#    name                 = "customScript"
-#    publisher            = "Microsoft.Azure.Extensions"
-#    type                 = "CustomScript"
-#    type_handler_version = "2.0"
-#    settings = jsonencode({
-#      "fileUris": ["https://installsh4577685m.blob.core.windows.net/data/install.sh"],
-#      "commandToExecute" = "/bin/bash  install.sh ${local.script_arguments}"
-#    })
-#  }
+  #  extension {
+  #    name                 = "customScript"
+  #    publisher            = "Microsoft.Azure.Extensions"
+  #    type                 = "CustomScript"
+  #    type_handler_version = "2.0"
+  #    settings = jsonencode({
+  #      "fileUris": ["https://installsh4577685m.blob.core.windows.net/data/install.sh"],
+  #      "commandToExecute" = "/bin/bash  install.sh ${local.script_arguments}"
+  #    })
+  #  }
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
@@ -268,8 +262,6 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
     }
 
   }
-
-
 
 
 }
