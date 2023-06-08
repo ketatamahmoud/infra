@@ -73,7 +73,7 @@ resource "azurerm_lb_backend_address_pool" "example" {
 
 resource "azurerm_storage_container" "data" {
   name                  = "data"
-  storage_account_name  = "installshmuleruntime"
+  storage_account_name  = "storageaccount"
   container_access_type = "blob"
 
 }
